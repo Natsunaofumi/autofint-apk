@@ -174,4 +174,4 @@ def main(page: ft.Page):
     load_data_laporan() 
 
 # Perintah ini akan langsung membuka browser
-ft.app(target=main, view=ft.WEB_BROWSER)
+ft.app(target=main)
