@@ -1,0 +1,37 @@
+name: Bikin APK Android
+
+on:
+  workflow_dispatch: # Agar bisa diklik tombol play manual
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Ambil Kode
+      uses: actions/checkout@v3
+
+    - name: Setup Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11' # Kita pakai Python baru di server GitHub agar cepat
+
+    - name: Setup Flutter
+      uses: subosito/flutter-action@v2
+      with:
+        flutter-version: '3.19.x'
+
+    - name: Install Flet
+      run: |
+        pip install -r requirements.txt
+        pip install flet # Install tools build tambahan
+
+    - name: Mulai Build APK (Memasak)
+      run: |
+        flet build apk --project-name "AutofintLite" --product-name "Autofint Lite" --org "com.autofint.app" --verbose
+
+    - name: Upload APK Jadi
+      uses: actions/upload-artifact@v4
+      with:
+        name: File-APK-Mentah
+        path: build/apk/**/*.apk
