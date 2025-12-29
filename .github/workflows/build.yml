@@ -1,4 +1,4 @@
-name: Build APK Fix
+name: Build APK Final
 
 on:
   workflow_dispatch:
@@ -8,16 +8,15 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Ambil Kode
+    - name: Checkout Code
       uses: actions/checkout@v3
 
-    - name: Setup Python Canggih (3.11)
+    - name: Setup Python
       uses: actions/setup-python@v4
       with:
-        python-version: '3.11' 
-        # Kita pakai Python baru di sini agar tidak error Type Check
+        python-version: '3.12' # Pakai Python paling baru
 
-    - name: Setup Java (Wajib untuk Android)
+    - name: Setup Java
       uses: actions/setup-java@v3
       with:
         distribution: 'temurin'
@@ -26,20 +25,20 @@ jobs:
     - name: Setup Flutter
       uses: subosito/flutter-action@v2
       with:
-        flutter-version: '3.19.x'
+        flutter-version: '3.22.x' # Pakai Flutter stabil terbaru
 
-    - name: Install Alat Build
+    - name: Install Dependencies
       run: |
-        pip install flet 
-        # Kita install Flet versi terbaru di server untuk build
-        # Abaikan versi laptop, server lebih kuat
+        pip install -r requirements.txt
+        pip install flet # Paksa update ke flet terbaru di server
 
-    - name: Mulai Memasak (Build APK)
+    - name: Build APK
       run: |
+        # Perintah ini akan membuat APK
         flet build apk --project-name "AutofintLite" --product-name "Autofint Lite" --org "com.autofint.app" --verbose
 
-    - name: Upload Hasil APK
+    - name: Upload APK
       uses: actions/upload-artifact@v4
       with:
-        name: File-APK-Matang
+        name: Autofint-APK-Siap-Pakai
         path: build/apk/**/*.apk
