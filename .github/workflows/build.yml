@@ -1,37 +1,45 @@
-name: Bikin APK Android
+name: Build APK Fix
 
 on:
-  workflow_dispatch: # Agar bisa diklik tombol play manual
+  workflow_dispatch:
 
 jobs:
   build:
     runs-on: ubuntu-latest
-    
+
     steps:
     - name: Ambil Kode
       uses: actions/checkout@v3
 
-    - name: Setup Python
+    - name: Setup Python Canggih (3.11)
       uses: actions/setup-python@v4
       with:
-        python-version: '3.11' # Kita pakai Python baru di server GitHub agar cepat
+        python-version: '3.11' 
+        # Kita pakai Python baru di sini agar tidak error Type Check
+
+    - name: Setup Java (Wajib untuk Android)
+      uses: actions/setup-java@v3
+      with:
+        distribution: 'temurin'
+        java-version: '17'
 
     - name: Setup Flutter
       uses: subosito/flutter-action@v2
       with:
         flutter-version: '3.19.x'
 
-    - name: Install Flet
+    - name: Install Alat Build
       run: |
-        pip install -r requirements.txt
-        pip install flet # Install tools build tambahan
+        pip install flet 
+        # Kita install Flet versi terbaru di server untuk build
+        # Abaikan versi laptop, server lebih kuat
 
-    - name: Mulai Build APK (Memasak)
+    - name: Mulai Memasak (Build APK)
       run: |
         flet build apk --project-name "AutofintLite" --product-name "Autofint Lite" --org "com.autofint.app" --verbose
 
-    - name: Upload APK Jadi
+    - name: Upload Hasil APK
       uses: actions/upload-artifact@v4
       with:
-        name: File-APK-Mentah
+        name: File-APK-Matang
         path: build/apk/**/*.apk
