@@ -172,6 +172,5 @@ def main(page: ft.Page):
 
     page.add(t)
     load_data_laporan() 
-
-# Perintah ini akan langsung membuka browser
+    
 ft.app(target=main)
