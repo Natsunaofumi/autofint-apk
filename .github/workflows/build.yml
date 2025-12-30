@@ -1,5 +1,4 @@
-
-name: Build APK Final Fix
+name: Build APK Polos (Pasti Jalan)
 
 on:
   workflow_dispatch:
@@ -27,17 +26,17 @@ jobs:
       uses: subosito/flutter-action@v2
       with:
         channel: 'stable'
-        flutter-version: '3.24.x' # <--- WAJIB VERSI INI UNTUK FLET BARU
+        flutter-version: '3.24.x'
 
     - name: Install Dependencies
       run: |
         pip install -r requirements.txt
-        flet --version 
-        # Cek versi flet yang terinstall di log
+        flet --version
 
-    - name: Build APK
+    - name: Build APK (Tanpa Argumen Ribet)
       run: |
-        flet build apk --project-name "AutofintLite" --product-name "Autofint Lite" --org "com.autofint.app" --verbose
+        # Kita jalankan perintah paling standar
+        flet build apk --verbose
 
     - name: Upload APK
       uses: actions/upload-artifact@v4
