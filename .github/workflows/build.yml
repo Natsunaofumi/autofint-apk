@@ -1,45 +1,59 @@
-name: Build APK Auto-Yes
+name: Build Android APK
 
 on:
-  workflow_dispatch:
+  workflow_dispatch: # Memungkinkan kita menjalankan build secara manual tombol klik
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout Code
-      uses: actions/checkout@v3
+      # 1. Ambil kode dari repository
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-    - name: Setup Python
-      uses: actions/setup-python@v4
-      with:
-        python-version: '3.12'
+      # 2. Setup Python
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
 
-    - name: Setup Java
-      uses: actions/setup-java@v3
-      with:
-        distribution: 'temurin'
-        java-version: '17'
+      # 3. Setup Java (Dibutuhkan untuk Android Build)
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
 
-    - name: Setup Flutter
-      uses: subosito/flutter-action@v2
-      with:
-        channel: 'stable'
-        flutter-version: '3.24.x'
+      # 4. Setup Flutter (Mesin utama untuk build Flet ke Mobile)
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+          flutter-version: '3.19.0' # Versi stabil yang kompatibel
 
-    - name: Install Dependencies
-      run: |
-        pip install -r requirements.txt
-        flet --version
+      # 5. Install Dependencies (Flet, dll)
+      - name: Install Python Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install flet
 
-    - name: Build APK (Auto Accept)
-      run: |
-        # Perintah 'yes' akan otomatis menekan 'y' saat ditanya install
-        yes | flet build apk --verbose
+      # --- PERBAIKAN UTAMA DI SINI ---
+      # 5b. Setujui Lisensi Android secara Otomatis
+      - name: Accept Android Licenses
+        run: |
+          yes | flutter doctor --android-licenses
 
-    - name: Upload APK
-      uses: actions/upload-artifact@v4
-      with:
-        name: Aplikasi-Jadi
-        path: build/apk/**/*.apk
+      # 6. Jalankan Perintah Build Flet
+      - name: Build APK with Flet
+        run: |
+          flet build apk --verbose
+
+      # 7. Upload Hasil APK agar bisa didownload
+      - name: Upload APK Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: AutofintPro-Release
+          path: build/apk/*.apk
+          if-no-files-found: error
