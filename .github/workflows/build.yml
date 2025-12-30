@@ -1,4 +1,4 @@
-name: Build APK Polos (Pasti Jalan)
+name: Build APK Auto-Yes
 
 on:
   workflow_dispatch:
@@ -33,10 +33,10 @@ jobs:
         pip install -r requirements.txt
         flet --version
 
-    - name: Build APK (Tanpa Argumen Ribet)
+    - name: Build APK (Auto Accept)
       run: |
-        # Kita jalankan perintah paling standar
-        flet build apk --verbose
+        # Perintah 'yes' akan otomatis menekan 'y' saat ditanya install
+        yes | flet build apk --verbose
 
     - name: Upload APK
       uses: actions/upload-artifact@v4
