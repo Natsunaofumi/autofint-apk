@@ -3,14 +3,14 @@ import sqlite3
 from datetime import datetime
 
 def main(page: ft.Page):
-    # --- KONFIGURASI HALAMAN (Versi 0.21.2) ---
+    # --- KONFIGURASI HALAMAN ---
     page.title = "Autofint Lite"
-    page.theme_mode = "light"
-    page.window_width = 390
-    page.window_height = 844
-    page.scroll = "adaptive"
+    page.theme_mode = ft.ThemeMode.LIGHT
+    # Hapus window_width/height karena tidak perlu di APK
+    page.scroll = ft.ScrollMode.ADAPTIVE
 
     # --- DATABASE SETUP (SQLite) ---
+    # Di Android, kita letakkan DB di folder dokumen aplikasi
     conn = sqlite3.connect("keuangan.db", check_same_thread=False)
     c = conn.cursor()
     c.execute('''CREATE TABLE IF NOT EXISTS transaksi
@@ -46,8 +46,7 @@ def main(page: ft.Page):
             input_deskripsi.value = ""
             
             # Notifikasi
-            page.snack_bar = ft.SnackBar(ft.Text("Data berhasil disimpan!"))
-            page.snack_bar.open = True
+            page.open(ft.SnackBar(ft.Text("Data berhasil disimpan!")))
             
             load_data_laporan() # Refresh laporan
             page.update()
@@ -78,7 +77,7 @@ def main(page: ft.Page):
         
         tabel_transaksi.rows.clear()
         for row in data:
-            # row: 0=tgl, 1=tipe, 2=kategori, 3=desc, 4=jml
+            # PENTING: Gunakan string "green"/"red" agar kompatibel semua versi
             warna = "green" if row[1] == "Pemasukan" else "red"
             
             tabel_transaksi.rows.append(
@@ -94,7 +93,6 @@ def main(page: ft.Page):
 
     # --- UI COMPONENTS ---
     
-    # 1. Input Tab Components
     input_tipe = ft.Dropdown(
         label="Tipe Transaksi",
         options=[ft.dropdown.Option("Pengeluaran"), ft.dropdown.Option("Pemasukan")],
@@ -112,8 +110,10 @@ def main(page: ft.Page):
         value="Makanan"
     )
     input_deskripsi = ft.TextField(label="Deskripsi (Cth: Nasi Goreng)")
-    input_jumlah = ft.TextField(label="Jumlah (Rp)", keyboard_type="number")
+    # keyboard_type NUMBER adalah standard baru
+    input_jumlah = ft.TextField(label="Jumlah (Rp)", keyboard_type=ft.KeyboardType.NUMBER)
     
+    # Gunakan string "blue" dan "white"
     btn_simpan = ft.ElevatedButton(text="SIMPAN DATA", on_click=tambah_transaksi, width=300, bgcolor="blue", color="white")
 
     tab_input = ft.Container(
@@ -129,7 +129,7 @@ def main(page: ft.Page):
         ])
     )
 
-    # 2. Laporan Tab Components
+    # Output Components
     txt_pemasukan = ft.Text("Rp 0", color="green", weight="bold")
     txt_pengeluaran = ft.Text("Rp 0", color="red", weight="bold")
     txt_sisa = ft.Text("Rp 0", color="blue", size=20, weight="bold")
@@ -154,23 +154,24 @@ def main(page: ft.Page):
             txt_sisa,
             ft.Divider(),
             ft.Text("Riwayat Terakhir:", weight="bold"),
-            ft.Column([tabel_transaksi], scroll="auto", height=300)
+            ft.Column([tabel_transaksi], scroll=ft.ScrollMode.AUTO, height=300)
         ])
     )
 
-    # --- MAIN LAYOUT (TABS) ---
+    # --- MAIN LAYOUT ---
     t = ft.Tabs(
         selected_index=0,
         animation_duration=300,
         tabs=[
-            # Di versi 0.21.2, pakai ft.icons.NAMA_ICON aman!
-            ft.Tab(text="Input", icon=ft.icons.EDIT, content=tab_input),
-            ft.Tab(text="Laporan", icon=ft.icons.ANALYTICS, content=tab_laporan),
+            # Gunakan String icon "edit" dan "analytics" agar aman
+            ft.Tab(text="Input", icon="edit", content=tab_input),
+            ft.Tab(text="Laporan", icon="analytics", content=tab_laporan),
         ],
         expand=1,
     )
 
     page.add(t)
     load_data_laporan() 
-    
+
+# FINAL FIX: Hapus view=WEB_BROWSER
 ft.app(target=main)
