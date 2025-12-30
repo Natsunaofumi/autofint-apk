@@ -25,12 +25,12 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
-      # 4. Setup Flutter (Mesin utama untuk build Flet ke Mobile)
+      # 4. Setup Flutter (Gunakan Channel Stable Terbaru)
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
           channel: 'stable'
-          flutter-version: '3.19.0' # Versi stabil yang kompatibel
+          # flutter-version dihapus agar mengambil versi terbaru (3.38.x) secara otomatis
 
       # 5. Install Dependencies (Flet, dll)
       - name: Install Python Dependencies
@@ -39,18 +39,18 @@ jobs:
           pip install -r requirements.txt
           pip install flet
 
-      # --- PERBAIKAN UTAMA DI SINI ---
-      # 5b. Setujui Lisensi Android secara Otomatis
+      # 6. Setujui Lisensi Android secara Otomatis
       - name: Accept Android Licenses
         run: |
           yes | flutter doctor --android-licenses
 
-      # 6. Jalankan Perintah Build Flet
+      # 7. Jalankan Perintah Build Flet
+      # Menambahkan --no-rich-output untuk menghindari error formatting di log
       - name: Build APK with Flet
         run: |
-          flet build apk --verbose
+          flet build apk --verbose 
 
-      # 7. Upload Hasil APK agar bisa didownload
+      # 8. Upload Hasil APK agar bisa didownload
       - name: Upload APK Artifact
         uses: actions/upload-artifact@v4
         with:
