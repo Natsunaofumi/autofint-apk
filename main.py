@@ -15,10 +15,10 @@ def main(page: ft.Page):
 
     # --- ERROR HANDLING WRAPPER ---
     try:
-        # --- PERBAIKAN 1: GUNAKAN STRING WARNA (ANTI-CRASH) ---
-        color_primary = "teal" # Sebelumnya ft.colors.TEAL_600
+        # Gunakan String Warna (Aman)
+        color_primary = "teal" 
         
-        # --- DATABASE SETUP (ANDROID FIX V2) ---
+        # --- DATABASE SETUP (ANDROID FIX) ---
         storage_path = os.environ.get("FLET_APP_STORAGE_DATA")
         if storage_path:
             db_path = os.path.join(storage_path, "keuangan.db")
@@ -102,16 +102,19 @@ def main(page: ft.Page):
             
         def get_watermark():
             return ft.Container(
-                content=ft.Text("Powered by Gita Technology", size=10, italic=True, color="grey"), # Ganti ft.colors.GREY_400
+                content=ft.Text("Powered by Gita Technology", size=10, italic=True, color="grey"),
                 alignment=ft.alignment.center,
                 padding=ft.padding.only(top=10, bottom=10)
             )
 
+        # --- PERBAIKAN NAVIGASI (CRITICAL FIX) ---
+        # Mengganti NavigationDestination menjadi NavigationBarDestination sesuai error log
+        # Mengganti ikon OUTLINED menjadi ikon biasa agar kompatibel semua versi
         nav_bar = ft.NavigationBar(
             destinations=[
-                ft.NavigationDestination(icon=ft.icons.DASHBOARD_OUTLINED, selected_icon=ft.icons.DASHBOARD, label="Beranda"),
-                ft.NavigationDestination(icon=ft.icons.ADD_CIRCLE_OUTLINE, selected_icon=ft.icons.ADD_CIRCLE, label="Input"),
-                ft.NavigationDestination(icon=ft.icons.INSERT_CHART_OUTLINED, selected_icon=ft.icons.INSERT_CHART, label="Laporan"),
+                ft.NavigationBarDestination(icon=ft.icons.DASHBOARD, label="Beranda"),
+                ft.NavigationBarDestination(icon=ft.icons.ADD_CIRCLE, label="Input"),
+                ft.NavigationBarDestination(icon=ft.icons.INSERT_CHART, label="Laporan"),
             ]
         )
 
@@ -139,7 +142,7 @@ def main(page: ft.Page):
         input_kategori = ft.Dropdown(label="Kategori", prefix_icon=ft.icons.CATEGORY, border_radius=12)
         input_deskripsi = ft.TextField(label="Catatan", prefix_icon=ft.icons.NOTE, border_radius=12)
         
-        lbl_helper_nominal = ft.Text("Rp 0", size=12, italic=True, color="teal") # Ganti ft.colors.PRIMARY
+        lbl_helper_nominal = ft.Text("Rp 0", size=12, italic=True, color="teal")
         input_jumlah = ft.TextField(
             label="Nominal (Angka Saja)", prefix_icon=ft.icons.MONEY, 
             keyboard_type=ft.KeyboardType.NUMBER, border_radius=12
@@ -220,7 +223,7 @@ def main(page: ft.Page):
             
             btn_simpan.text = "UPDATE TRANSAKSI"
             btn_simpan.icon = ft.icons.UPDATE
-            btn_simpan.style.bgcolor = "orange" # Ganti ft.colors.ORANGE
+            btn_simpan.style.bgcolor = "orange" 
             btn_batal_edit.visible = True
             page.update()
             page.show_snack_bar(ft.SnackBar(ft.Text("Mode Edit Aktif")))
@@ -313,14 +316,14 @@ def main(page: ft.Page):
                     r_copy = row
                     
                     tile = ft.Container(
-                        bgcolor="surface", # Ganti ft.colors.SURFACE_VARIANT jadi string "surface" atau hex
+                        bgcolor="surface", 
                         padding=10, 
                         border_radius=10, 
                         border=ft.border.all(0.5, "grey"),
                         content=ft.Row([
                             ft.Container(
                                 content=ft.Icon(get_icon_for_category(r_copy[3]), color="white", size=18), 
-                                bgcolor=color_primary if is_in else "red400", # Ganti ft.colors.RED_400
+                                bgcolor=color_primary if is_in else "red400", 
                                 padding=8, 
                                 border_radius=8
                             ),
@@ -365,7 +368,6 @@ def main(page: ft.Page):
             data_chart = c.fetchall()
             
             chart_pie.sections.clear()
-            # GANTI LIST WARNA JADI STRING STRING BIASA
             colors = ["blue", "red", "orange", "purple", "green", "teal", "pink"]
             total_filtered = sum([r[1] for r in data_chart])
             
@@ -456,7 +458,7 @@ def main(page: ft.Page):
                     ft.Container(
                         gradient=ft.LinearGradient(
                             begin=ft.alignment.top_left, end=ft.alignment.bottom_right,
-                            colors=["teal400", "teal800"], # Ganti ft.colors...
+                            colors=["teal400", "teal800"], 
                         ),
                         border_radius=ft.border_radius.only(bottom_left=30, bottom_right=30),
                         padding=25,
@@ -521,7 +523,7 @@ def main(page: ft.Page):
                     ft.Container(height=10),
                     ft.Container(
                         content=chart_pie, height=300, padding=10,
-                        border=ft.border.all(1, "grey"), # Ganti ft.colors.OUTLINE_VARIANT
+                        border=ft.border.all(1, "grey"), 
                         border_radius=20
                     ),
                     txt_chart_info,
@@ -568,10 +570,11 @@ def main(page: ft.Page):
             ft.SafeArea(
                 ft.Container(
                     padding=20, 
-                    bgcolor="red900", # Ganti ft.colors.RED_900
+                    bgcolor="red900", 
                     expand=True,
                     content=ft.Column([
-                        ft.Icon(ft.icons.ERROR_OUTLINE, color="white", size=50),
+                        # PERBAIKAN IKON ERROR (Ganti ERROR_OUTLINE jadi ERROR)
+                        ft.Icon(ft.icons.ERROR, color="white", size=50),
                         ft.Text("CRITICAL ERROR", color="white", weight="bold", size=20),
                         ft.Divider(color="white"),
                         ft.Text("Mohon screenshot layar ini:", color="white"),
