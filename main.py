@@ -78,23 +78,24 @@ def main(page: ft.Page):
                 return f"Rp {int(val):,}".replace(",", ".")
             except: return "Rp 0"
 
+        # --- PERBAIKAN 1: IKON MENJADI STRING ---
         def get_icon_for_category(kategori):
-            if not kategori: return ft.icons.CATEGORY
+            if not kategori: return "category"
             kat = kategori.lower()
-            if "makan" in kat: return ft.icons.FASTFOOD
-            if "transport" in kat: return ft.icons.DIRECTIONS_CAR
-            if "gaji" in kat: return ft.icons.ATTACH_MONEY
-            if "invest" in kat or "tabungan" in kat or "darurat" in kat: return ft.icons.SAVINGS
-            if "tagihan" in kat or "listrik" in kat: return ft.icons.RECEIPT_LONG
-            if "belanja" in kat: return ft.icons.SHOPPING_BAG
-            if "kesehatan" in kat: return ft.icons.MEDICAL_SERVICES
-            return ft.icons.CATEGORY
+            if "makan" in kat: return "fastfood"
+            if "transport" in kat: return "directions_car"
+            if "gaji" in kat: return "attach_money"
+            if "invest" in kat or "tabungan" in kat or "darurat" in kat: return "savings"
+            if "tagihan" in kat or "listrik" in kat: return "receipt_long"
+            if "belanja" in kat: return "shopping_bag"
+            if "kesehatan" in kat: return "medical_services"
+            return "category"
 
         def get_logo(is_dark_bg=False):
             color = "white" if is_dark_bg else color_primary
             return ft.Row(
                 [
-                    ft.Icon(ft.icons.TOKEN, color=color, size=20),
+                    ft.Icon("token", color=color, size=20), # String icon
                     ft.Text("Gita Technology", weight="bold", size=18, color=color, font_family="Roboto")
                 ], 
                 alignment=ft.MainAxisAlignment.CENTER
@@ -107,14 +108,12 @@ def main(page: ft.Page):
                 padding=ft.padding.only(top=10, bottom=10)
             )
 
-        # --- PERBAIKAN NAVIGASI (CRITICAL FIX) ---
-        # Mengganti NavigationDestination menjadi NavigationBarDestination sesuai error log
-        # Mengganti ikon OUTLINED menjadi ikon biasa agar kompatibel semua versi
+        # --- PERBAIKAN 2: NAVIGATION BAR (STRING ICON) ---
         nav_bar = ft.NavigationBar(
             destinations=[
-                ft.NavigationBarDestination(icon=ft.icons.DASHBOARD, label="Beranda"),
-                ft.NavigationBarDestination(icon=ft.icons.ADD_CIRCLE, label="Input"),
-                ft.NavigationBarDestination(icon=ft.icons.INSERT_CHART, label="Laporan"),
+                ft.NavigationBarDestination(icon="dashboard", label="Beranda"),
+                ft.NavigationBarDestination(icon="add_circle", label="Input"),
+                ft.NavigationBarDestination(icon="insert_chart", label="Laporan"),
             ]
         )
 
@@ -134,33 +133,33 @@ def main(page: ft.Page):
         file_picker = ft.FilePicker(on_result=save_file_result)
         page.overlay.append(file_picker)
 
-        # --- INPUT COMPONENT ---
+        # --- INPUT COMPONENT (STRING ICON) ---
         input_tipe = ft.Dropdown(
             label="Tipe", options=[ft.dropdown.Option("Pengeluaran"), ft.dropdown.Option("Pemasukan")],
-            value="Pengeluaran", prefix_icon=ft.icons.SWAP_VERT, border_radius=12
+            value="Pengeluaran", prefix_icon="swap_vert", border_radius=12
         )
-        input_kategori = ft.Dropdown(label="Kategori", prefix_icon=ft.icons.CATEGORY, border_radius=12)
-        input_deskripsi = ft.TextField(label="Catatan", prefix_icon=ft.icons.NOTE, border_radius=12)
+        input_kategori = ft.Dropdown(label="Kategori", prefix_icon="category", border_radius=12)
+        input_deskripsi = ft.TextField(label="Catatan", prefix_icon="note", border_radius=12)
         
         lbl_helper_nominal = ft.Text("Rp 0", size=12, italic=True, color="teal")
         input_jumlah = ft.TextField(
-            label="Nominal (Angka Saja)", prefix_icon=ft.icons.MONEY, 
+            label="Nominal (Angka Saja)", prefix_icon="money", 
             keyboard_type=ft.KeyboardType.NUMBER, border_radius=12
         )
 
         btn_simpan = ft.ElevatedButton(
-            text="SIMPAN TRANSAKSI", icon=ft.icons.SAVE,
+            text="SIMPAN TRANSAKSI", icon="save",
             style=ft.ButtonStyle(bgcolor=color_primary, color="white", padding=15, shape=ft.RoundedRectangleBorder(radius=10)),
             width=float("inf")
         )
         btn_batal_edit = ft.TextButton("Batal Edit", visible=False)
 
-        # --- DASHBOARD COMPONENT ---
+        # --- DASHBOARD COMPONENT (STRING ICON) ---
         txt_saldo = ft.Text("Rp 0", size=28, weight="bold", color="white")
         txt_masuk = ft.Text("Rp 0", size=14, color="white70")
         txt_keluar = ft.Text("Rp 0", size=14, color="white70")
         txt_invest = ft.Text("Rp 0", size=14, color="white70") 
-        txt_search = ft.TextField(hint_text="Cari...", prefix_icon=ft.icons.SEARCH, border_radius=10, height=40, text_size=12, content_padding=10)
+        txt_search = ft.TextField(hint_text="Cari...", prefix_icon="search", border_radius=10, height=40, text_size=12, content_padding=10)
         lv_dashboard = ft.Column(spacing=10)
 
         # --- LAPORAN COMPONENT ---
@@ -222,7 +221,7 @@ def main(page: ft.Page):
             on_nominal_change(None) 
             
             btn_simpan.text = "UPDATE TRANSAKSI"
-            btn_simpan.icon = ft.icons.UPDATE
+            btn_simpan.icon = "update"
             btn_simpan.style.bgcolor = "orange" 
             btn_batal_edit.visible = True
             page.update()
@@ -235,7 +234,7 @@ def main(page: ft.Page):
             input_deskripsi.value = ""
             lbl_helper_nominal.value = "Rp 0"
             btn_simpan.text = "SIMPAN TRANSAKSI"
-            btn_simpan.icon = ft.icons.SAVE
+            btn_simpan.icon = "save"
             btn_simpan.style.bgcolor = color_primary
             btn_batal_edit.visible = False
             page.update()
@@ -334,8 +333,8 @@ def main(page: ft.Page):
                             ft.Column([
                                 ft.Text(f"{sign} {format_rupiah(r_copy[5]).replace('Rp ','')}", color=color_amt, weight="bold", size=13),
                                 ft.Row([
-                                    ft.GestureDetector(content=ft.Icon(ft.icons.EDIT, size=18, color="teal"), on_tap=lambda e, r=r_copy: prepare_edit(r)),
-                                    ft.GestureDetector(content=ft.Icon(ft.icons.DELETE, size=18, color="red"), on_tap=lambda e, r=r_copy[0]: delete_trx(r))
+                                    ft.GestureDetector(content=ft.Icon("edit", size=18, color="teal"), on_tap=lambda e, r=r_copy: prepare_edit(r)),
+                                    ft.GestureDetector(content=ft.Icon("delete", size=18, color="red"), on_tap=lambda e, r=r_copy[0]: delete_trx(r))
                                 ])
                             ], alignment="end", spacing=2)
                         ])
@@ -442,7 +441,7 @@ def main(page: ft.Page):
                 alignment=ft.alignment.center,
                 padding=30,
                 content=ft.Column([
-                    ft.Icon(ft.icons.LOCK_OUTLINE, size=60, color=color_primary),
+                    ft.Icon("lock_outline", size=60, color=color_primary), # String Icon
                     ft.Text("Secured Finance", size=24, weight="bold", color=color_primary),
                     ft.Container(height=30),
                     input_pin,
@@ -475,9 +474,9 @@ def main(page: ft.Page):
                             ),
                             ft.Container(height=15),
                             ft.Row([
-                                ft.Column([ft.Icon(ft.icons.ARROW_DOWNWARD, color="greenAccent", size=14), txt_masuk]),
-                                ft.Column([ft.Icon(ft.icons.ARROW_UPWARD, color="redAccent", size=14), txt_keluar]),
-                                ft.Column([ft.Icon(ft.icons.SAVINGS, color="orangeAccent", size=14), txt_invest]),
+                                ft.Column([ft.Icon("arrow_downward", color="greenAccent", size=14), txt_masuk]),
+                                ft.Column([ft.Icon("arrow_upward", color="redAccent", size=14), txt_keluar]),
+                                ft.Column([ft.Icon("savings", color="orangeAccent", size=14), txt_invest]),
                             ], alignment="spaceEvenly")
                         ])
                     ),
@@ -500,7 +499,7 @@ def main(page: ft.Page):
                     input_tipe,
                     ft.Row([
                         ft.Container(content=input_kategori, expand=True),
-                        ft.IconButton(ft.icons.ADD_BOX, icon_color=color_primary, on_click=lambda e: page.open(ft.AlertDialog(title=ft.Text("Tambah Kategori (Belum aktif)"))))
+                        ft.IconButton("add_box", icon_color=color_primary, on_click=lambda e: page.open(ft.AlertDialog(title=ft.Text("Tambah Kategori (Belum aktif)"))))
                     ]),
                     input_jumlah,
                     lbl_helper_nominal,
@@ -528,7 +527,7 @@ def main(page: ft.Page):
                     ),
                     txt_chart_info,
                     ft.Divider(),
-                    ft.Row([ft.Text("Rincian Transaksi", weight="bold"), ft.IconButton(ft.icons.DOWNLOAD, tooltip="Export CSV", on_click=lambda e: file_picker.save_file(file_name="Laporan.csv"))], alignment="spaceBetween"),
+                    ft.Row([ft.Text("Rincian Transaksi", weight="bold"), ft.IconButton("download", tooltip="Export CSV", on_click=lambda e: file_picker.save_file(file_name="Laporan.csv"))], alignment="spaceBetween"),
                     lv_laporan,
                     get_watermark() 
                 ], spacing=10, scroll=ft.ScrollMode.AUTO),
@@ -573,8 +572,8 @@ def main(page: ft.Page):
                     bgcolor="red900", 
                     expand=True,
                     content=ft.Column([
-                        # PERBAIKAN IKON ERROR (Ganti ERROR_OUTLINE jadi ERROR)
-                        ft.Icon(ft.icons.ERROR, color="white", size=50),
+                        # Ikon Error dalam bentuk STRING (Sangat Aman)
+                        ft.Icon("error_outline", color="white", size=50),
                         ft.Text("CRITICAL ERROR", color="white", weight="bold", size=20),
                         ft.Divider(color="white"),
                         ft.Text("Mohon screenshot layar ini:", color="white"),
