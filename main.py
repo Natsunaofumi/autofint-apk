@@ -6,19 +6,27 @@ import os
 import traceback
 
 def main(page: ft.Page):
-    # --- KONFIGURASI HALAMAN ---
-    page.title = "Autofint Pro"
-    page.theme_mode = ft.ThemeMode.LIGHT
-    page.padding = 0
-    page.spacing = 0
-    page.scroll = ft.ScrollMode.AUTO 
-
-    # --- ERROR HANDLING WRAPPER ---
+    # --- ERROR HANDLING UTAMA ---
     try:
-        # Gunakan String Warna (Aman)
+        # --- KONFIGURASI HALAMAN ---
+        page.title = "Autofint Pro"
+        page.theme_mode = ft.ThemeMode.LIGHT
+        page.padding = 0
+        page.spacing = 0
+        
+        # Warna Tema
         color_primary = "teal" 
         
-        # --- DATABASE SETUP (ANDROID FIX) ---
+        # --- FIX KOMPATIBILITAS VERSI ---
+        # Deteksi otomatis nama komponen navigasi
+        if hasattr(ft, "NavigationDestination"):
+            NavDest = ft.NavigationDestination
+        elif hasattr(ft, "NavigationBarDestination"):
+            NavDest = ft.NavigationBarDestination
+        else:
+            NavDest = ft.NavigationDestination # Fallback
+
+        # --- DATABASE SETUP ---
         storage_path = os.environ.get("FLET_APP_STORAGE_DATA")
         if storage_path:
             db_path = os.path.join(storage_path, "keuangan.db")
@@ -78,7 +86,6 @@ def main(page: ft.Page):
                 return f"Rp {int(val):,}".replace(",", ".")
             except: return "Rp 0"
 
-        # --- PERBAIKAN 1: IKON MENJADI STRING ---
         def get_icon_for_category(kategori):
             if not kategori: return "category"
             kat = kategori.lower()
@@ -95,7 +102,7 @@ def main(page: ft.Page):
             color = "white" if is_dark_bg else color_primary
             return ft.Row(
                 [
-                    ft.Icon("token", color=color, size=20), # String icon
+                    ft.Icon("token", color=color, size=20), 
                     ft.Text("Gita Technology", weight="bold", size=18, color=color, font_family="Roboto")
                 ], 
                 alignment=ft.MainAxisAlignment.CENTER
@@ -108,12 +115,12 @@ def main(page: ft.Page):
                 padding=ft.padding.only(top=10, bottom=10)
             )
 
-        # --- PERBAIKAN 2: NAVIGATION BAR (STRING ICON) ---
+        # --- NAVIGATION BAR ---
         nav_bar = ft.NavigationBar(
             destinations=[
-                ft.NavigationBarDestination(icon="dashboard", label="Beranda"),
-                ft.NavigationBarDestination(icon="add_circle", label="Input"),
-                ft.NavigationBarDestination(icon="insert_chart", label="Laporan"),
+                NavDest(icon="dashboard", label="Beranda"),
+                NavDest(icon="add_circle", label="Input"),
+                NavDest(icon="insert_chart", label="Laporan"),
             ]
         )
 
@@ -133,7 +140,8 @@ def main(page: ft.Page):
         file_picker = ft.FilePicker(on_result=save_file_result)
         page.overlay.append(file_picker)
 
-        # --- INPUT COMPONENT (STRING ICON) ---
+        # --- UI COMPONENTS ---
+        # PERBAIKAN: Menghapus 'height' dari Dropdown dan TextField agar kompatibel
         input_tipe = ft.Dropdown(
             label="Tipe", options=[ft.dropdown.Option("Pengeluaran"), ft.dropdown.Option("Pemasukan")],
             value="Pengeluaran", prefix_icon="swap_vert", border_radius=12
@@ -154,22 +162,29 @@ def main(page: ft.Page):
         )
         btn_batal_edit = ft.TextButton("Batal Edit", visible=False)
 
-        # --- DASHBOARD COMPONENT (STRING ICON) ---
+        # --- DASHBOARD ---
         txt_saldo = ft.Text("Rp 0", size=28, weight="bold", color="white")
         txt_masuk = ft.Text("Rp 0", size=14, color="white70")
         txt_keluar = ft.Text("Rp 0", size=14, color="white70")
         txt_invest = ft.Text("Rp 0", size=14, color="white70") 
-        txt_search = ft.TextField(hint_text="Cari...", prefix_icon="search", border_radius=10, height=40, text_size=12, content_padding=10)
+        
+        # PERBAIKAN: Menghapus height=40 dari TextField ini
+        txt_search = ft.TextField(
+            hint_text="Cari...", prefix_icon="search", 
+            border_radius=10, text_size=12, content_padding=10
+        )
         lv_dashboard = ft.Column(spacing=10)
 
-        # --- LAPORAN COMPONENT ---
+        # --- LAPORAN ---
+        # PERBAIKAN: Menghapus height=45 dari Dropdown ini
         filter_bulan = ft.Dropdown(
             label="Bulan", options=[ft.dropdown.Option("Semua")] + [ft.dropdown.Option(k) for k in map_bulan.keys()],
-            value="Semua", width=120, height=45, content_padding=10, text_size=12
+            value="Semua", width=120, content_padding=10, text_size=12
         )
+        # PERBAIKAN: Menghapus height=45 dari Dropdown ini
         filter_tahun = ft.Dropdown(
             label="Tahun", options=[ft.dropdown.Option(t) for t in list_tahun],
-            value=str(thn_skrg), width=90, height=45, content_padding=10, text_size=12
+            value=str(thn_skrg), width=90, content_padding=10, text_size=12
         )
         chart_pie = ft.PieChart(sections=[], sections_space=2, center_space_radius=40, expand=True)
         txt_chart_info = ft.Text("", size=12, italic=True, text_align="center")
@@ -441,7 +456,7 @@ def main(page: ft.Page):
                 alignment=ft.alignment.center,
                 padding=30,
                 content=ft.Column([
-                    ft.Icon("lock_outline", size=60, color=color_primary), # String Icon
+                    ft.Icon("lock_outline", size=60, color=color_primary),
                     ft.Text("Secured Finance", size=24, weight="bold", color=color_primary),
                     ft.Container(height=30),
                     input_pin,
@@ -572,7 +587,6 @@ def main(page: ft.Page):
                     bgcolor="red900", 
                     expand=True,
                     content=ft.Column([
-                        # Ikon Error dalam bentuk STRING (Sangat Aman)
                         ft.Icon("error_outline", color="white", size=50),
                         ft.Text("CRITICAL ERROR", color="white", weight="bold", size=20),
                         ft.Divider(color="white"),
